@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reflexión guiada</title>
+<!-- WIDGET 5 · REFLEXIÓN (Módulos 1, 7 y 8) — Cartilla Olimpismo
+     Usa ?m=1  -> Pregunta detonante (Módulo 1)
+         ?m=7  -> Análisis de caso y foro (Módulo 7)
+         ?m=8  -> Autoevaluación y compromiso final (Módulo 8) -->
+<style>
+  :root{--navy:#14213d;--red:#c8394d;--teal:#16708a;--teal-bg:#e0f0f4;--soft:#eef2f7;--line:#dce1e9;--muted:#586379;--good:#1d7f46;
+    --blue:#0081c8;--yellow:#e09b12;--black:#2b2f36;--green:#00a651;--rred:#ee334e}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--navy);font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.45}
+  .wrap{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:900px;margin:auto}
+  h1{font-family:Arial,sans-serif;font-size:21px;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  label.lbl{display:block;font-weight:700;margin-bottom:5px}
+  textarea{width:100%;min-height:96px;resize:vertical;font:inherit;color:inherit;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff}
+  textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+  .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:3px}
+  .saved{color:var(--good)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{all:unset;cursor:pointer;border:1.5px solid var(--line);border-radius:999px;padding:6px 13px;font-size:14px}
+  .chip[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .chip:focus-visible,.btn:focus-visible{outline:3px solid var(--teal)}
+  .case{background:var(--soft);border-radius:10px;padding:12px 14px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{all:unset;cursor:pointer;background:var(--red);color:#fff;font-weight:700;border-radius:8px;padding:10px 16px}
+  .btn.alt{background:var(--navy)}
+  .sl{display:grid;grid-template-columns:1fr 150px 26px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+  .sl b{text-align:right;font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--teal)}
+  .total{font-weight:700}
+  .cert{border:3px solid var(--navy);border-radius:12px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .rings{display:flex;gap:2px}.rings i{width:22px;height:22px;border-radius:50%;border:3px solid}
+  .cert h2{font-family:Arial,sans-serif;margin:0;font-size:24px;text-transform:uppercase}
+  .out{white-space:pre-wrap;background:var(--soft);border-radius:8px;padding:12px;font-size:14px}
+  [hidden]{display:none!important}
+  @media (max-width:600px){.sl{grid-template-columns:1fr 1fr 22px}.wrap{padding:12px}}
+</style></head><body>
+<div class="wrap" id="app"></div>
+<script>
+const m=(new URLSearchParams(location.search).get("m")||"1");
+const KEY="cartilla-reflex-"+m;
+let S={}; try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=id=>document.getElementById(id);
+
+const area=(id,label,ph,min=20)=>`<div><label class="lbl" for="${id}">${label}</label><textarea id="${id}" data-k="${id}" data-min="${min}" placeholder="${ph}">${esc(S[id])}</textarea><div class="meta"><span class="saved" id="ok_${id}"></span><span id="c_${id}"></span></div></div>`;
+const copyBtn=`<button class="btn alt" id="copy">Copiar mis respuestas</button><span class="sub" id="copyMsg"></span>`;
+
+const VIEWS={
+ "1":()=>`<div><h1>¿Qué tipo de profesional del deporte quiero ser?</h1><p class="sub">Tus respuestas se guardan automáticamente en este navegador.</p></div>
+   <div><span class="lbl">Elige hasta 3 palabras que te describan</span><div class="chips" id="chips">${["Exigente","Cercano","Innovador","Justo","Motivador","Paciente","Estratégico","Inclusivo","Disciplinado"].map(w=>`<button class="chip" aria-pressed="${(S.w||[]).includes(w)}">${w}</button>`).join("")}</div></div>
+   ${area("r1","¿Qué tipo de profesional quieres ser? (3 o 4 líneas)","Quiero ser un profesional que…")}
+   ${area("r2","Piensa en un entrenador o docente que te marcó. ¿Qué hacía que te gustaría repetir?","Recuerdo a mi entrenador(a)…")}
+   <div class="row">${copyBtn}</div>`,
+ "7":()=>`<div><h1>Análisis de caso real y foro</h1><p class="sub">Responde y luego copia tus respuestas para publicarlas en el foro del curso.</p></div>
+   <div class="case"><b>Burlada, España (2012).</b> El atleta keniano Abel Mutai se detuvo creyendo que ya había cruzado la meta. El español Iván Fernández Anaya, que venía detrás, en lugar de adelantarlo le indicó con gestos que siguiera y lo dejó ganar.</div>
+   ${area("c1","1. ¿Qué valor olímpico identificas y por qué?","Identifico el valor de…")}
+   ${area("c2","2. ¿Qué habilidades blandas puso en juego Fernández Anaya?","Usó…")}
+   ${area("c3","3. Como entrenador, ¿cómo usarías este caso con tus deportistas?","Lo usaría…")}
+   ${area("foro","Foro: ¿Qué fue lo más difícil de integrar un valor olímpico en tu sesión de entrenamiento?","Al diseñar mi sesión descubrí que…")}
+   <div class="row">${copyBtn}</div>`,
+ "8":()=>`<div><h1>Autoevaluación y compromiso</h1><p class="sub">Califícate con la rúbrica de la cartilla: 1 = En proceso · 2 = Satisfactorio · 3 = Destacado.</p></div>
+   <div>${CRIT.map((c,i)=>`<div class="sl"><label for="a${i}">${c}</label><input type="range" id="a${i}" min="1" max="3" step="1" value="${(S.a||[])[i]||2}" data-a="${i}"><b id="av${i}">${(S.a||[])[i]||2}</b></div>`).join("")}
+   <p class="total" style="margin:10px 0 0">Total: <span id="tot"></span> / 15</p></div>
+   ${area("fin","¿Cómo voy a aplicar esto en mi práctica profesional? Escribe un compromiso concreto: qué, cuándo y con quién.","En mi próxima práctica con…",30)}
+   <div class="row"><button class="btn" id="close">Cerrar la ruta</button>${copyBtn}</div>
+   <div id="cert"></div>`
+};
+const CRIT=["Comprensión de los valores olímpicos","Habilidades blandas","Toma de decisiones en los casos","Diseño de sesión con valores","Reflexión sobre mi rol profesional"];
+
+$("app").innerHTML=(VIEWS[m]||VIEWS["1"])();
+
+/* textos con guardado y contador */
+document.querySelectorAll("textarea").forEach(t=>{
+  const upd=()=>{const n=t.value.trim().length,min=+t.dataset.min;$("c_"+t.id).textContent=n<min?`Mínimo ${min} caracteres (${n})`:`${n} caracteres ✔`};
+  upd(); t.oninput=()=>{S[t.dataset.k]=t.value;save();$("ok_"+t.id).textContent="Guardado ✔";upd()};
+});
+
+/* palabras (m=1) */
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+  let a=S.w||[]; const w=c.textContent;
+  if(a.includes(w))a=a.filter(x=>x!==w); else if(a.length<3)a.push(w); else return;
+  S.w=a; save(); document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",a.includes(x.textContent)));
+});
+
+/* autoevaluación (m=8) */
+const tot=()=>{if(!$("tot"))return;let t=0;CRIT.forEach((_,i)=>t+=+((S.a||[])[i]||2));$("tot").textContent=t;return t};
+document.querySelectorAll("[data-a]").forEach(r=>r.oninput=()=>{S.a=S.a||[];S.a[+r.dataset.a]=+r.value;$("av"+r.dataset.a).textContent=r.value;save();tot()});
+tot();
+if($("close"))$("close").onclick=()=>{
+  if((S.fin||"").trim().length<30){$("cert").innerHTML=`<p class="sub" style="color:var(--red)">Escribe tu compromiso (mínimo 30 caracteres) para cerrar la ruta.</p>`;return}
+  const cols=["--blue","--black","--rred","--yellow","--green"];
+  $("cert").innerHTML=`<div class="cert"><div class="rings">${cols.map(c=>`<i style="border-color:var(${c})"></i>`).join("")}</div><h2>¡Ruta completada!</h2><p style="margin:0">Autoevaluación: <b>${tot()}/15</b></p><p class="sub" style="max-width:520px">“${esc(S.fin)}”</p><p class="sub">Excelencia · Respeto · Amistad</p></div>`;
+};
+
+/* copiar respuestas */
+if($("copy"))$("copy").onclick=()=>{
+  const parts=[...document.querySelectorAll("textarea")].map(t=>document.querySelector(`label[for="${t.id}"]`).textContent+"\n"+(t.value||"—"));
+  if(S.w&&S.w.length)parts.unshift("Palabras que me describen: "+S.w.join(", "));
+  if(m==="8")parts.unshift("Autoevaluación: "+tot()+"/15");
+  const txt=parts.join("\n\n");
+  const fallback=()=>{let o=$("outTxt");if(!o){o=document.createElement("div");o.id="outTxt";o.className="out";$("app").appendChild(o)}o.textContent=txt;const r=document.createRange();r.selectNodeContents(o);const s=getSelection();s.removeAllRanges();s.addRange(r);$("copyMsg").textContent="Texto seleccionado: presiona Ctrl+C"};
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>$("copyMsg").textContent="Copiado ✔ Pégalo en el foro").catch(fallback); else fallback();
+};
+</script>
+</body></html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Arrastrar y relacionar</title>
+<!-- WIDGET 3 · ARRASTRAR Y RELACIONAR (Módulo 4) — Cartilla Olimpismo -->
+<style>
+  :root{--navy:#14213d;--red:#c8394d;--teal:#16708a;--teal-bg:#e0f0f4;--soft:#eef2f7;--line:#dce1e9;--muted:#586379;
+    --good:#1d7f46;--good-bg:#e2f4e9;--bad:#b3261e;--bad-bg:#fde4e2;--blue:#0081c8;--black:#2b2f36;--green:#00a651}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--navy);font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.4}
+  .wrap{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:900px;margin:auto}
+  h1{font-family:Arial,sans-serif;font-size:21px;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .grid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
+  .pool{display:flex;flex-direction:column;gap:7px;min-height:60px;padding:4px;border-radius:10px}
+  .pool.over{background:var(--soft)}
+  .item{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:9px 11px;cursor:grab;user-select:none;touch-action:none;transition:border-color .15s,box-shadow .15s}
+  .item:hover{border-color:var(--navy)}
+  .item:focus-visible{outline:3px solid var(--teal)}
+  .item.sel{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+  .item.ok{border-color:var(--good);background:var(--good-bg)}
+  .item.ko{border-color:var(--bad);background:var(--bad-bg)}
+  .item.dragging{opacity:.4}
+  .zones{display:flex;flex-direction:column;gap:10px}
+  .zone{border:2px dashed var(--line);border-radius:10px;padding:10px;min-height:78px;display:flex;flex-direction:column;gap:7px;cursor:pointer;transition:.15s}
+  .zone.over{border-color:var(--teal);background:var(--teal-bg)}
+  .zone h2{margin:0;font-family:Arial,sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+  .zone h2 i{width:14px;height:14px;border-radius:50%;border:3px solid currentColor}
+  .hint{font-size:12px;color:var(--muted)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{all:unset;cursor:pointer;background:var(--red);color:#fff;font-weight:700;border-radius:8px;padding:10px 16px}
+  .btn.alt{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+  .btn:focus-visible{outline:3px solid var(--teal)}
+  .msg{font-weight:600}
+  .empty{color:var(--muted);font-size:13px;padding:8px}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}.wrap{padding:12px}}
+</style></head><body>
+<div class="wrap">
+  <div><h1>Arrastra y relaciona</h1><p class="sub">Arrastra cada situación al valor olímpico que representa. En celular o tablet: toca la situación y luego toca el valor.</p></div>
+  <div class="grid">
+    <div class="pool" id="pool" data-zone=""></div>
+    <div class="zones" id="zones"></div>
+  </div>
+  <div class="row"><button class="btn" id="check">Revisar</button><button class="btn alt" id="reset">Reiniciar</button><span class="msg" id="msg"></span></div>
+</div>
+<script>
+const VALORES=[["Excelencia","var(--blue)"],["Respeto","var(--black)"],["Amistad","var(--green)"]];
+const ITEMS=[
+ ["a","Un atleta rechaza un suplemento sin registro sanitario antes del torneo.","Respeto"],
+ ["b","Una nadadora repasa el video de su salida para mejorar 2 décimas.","Excelencia"],
+ ["c","El equipo invita a cenar a la delegación extranjera después del partido.","Amistad"],
+ ["d","El entrenador reduce la carga a un juvenil que vuelve de una lesión.","Respeto"],
+ ["e","Un docente pide a cada estudiante fijar una meta personal medible.","Excelencia"],
+ ["f","Dos clubes rivales comparten su cancha tras una inundación.","Amistad"]
+];
+const place={}; let sel=null, checked=false;
+const $=id=>document.getElementById(id);
+$("zones").innerHTML=VALORES.map(v=>`<div class="zone" data-zone="${v[0]}"><h2 style="color:${v[1]}"><i></i>${v[0]}</h2><span class="hint">Suelta aquí</span></div>`).join("");
+const card=it=>`<div class="item${sel===it[0]?" sel":""}" tabindex="0" data-id="${it[0]}">${it[1]}</div>`;
+
+function draw(){
+  checked=false;
+  const free=ITEMS.filter(it=>!place[it[0]]);
+  $("pool").innerHTML=free.length?free.map(card).join(""):`<p class="empty">✔ Todas las situaciones están ubicadas. Pulsa <b>Revisar</b>.</p>`;
+  document.querySelectorAll(".zone").forEach(z=>{
+    z.querySelectorAll(".item").forEach(x=>x.remove());
+    ITEMS.filter(it=>place[it[0]]===z.dataset.zone).forEach(it=>z.insertAdjacentHTML("beforeend",card(it)));
+    z.querySelector(".hint").hidden=z.querySelectorAll(".item").length>0;
+  });
+  document.querySelectorAll(".item").forEach(bindItem);
+}
+function drop(id,zone){ if(zone)place[id]=zone; else delete place[id]; sel=null; $("msg").textContent=""; draw(); }
+
+/* Arrastre con puntero (mouse y touch) */
+function bindItem(el){
+  el.onclick=e=>{e.stopPropagation(); sel=sel===el.dataset.id?null:el.dataset.id; draw();};
+  el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click()}};
+  el.onpointerdown=e=>{
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+    const sx=e.clientX, sy=e.clientY; let ghost=null, over=null;
+    const move=ev=>{
+      if(!ghost&&Math.hypot(ev.clientX-sx,ev.clientY-sy)<6)return;
+      if(!ghost){ghost=el.cloneNode(true);Object.assign(ghost.style,{position:"fixed",pointerEvents:"none",zIndex:9,width:el.offsetWidth+"px",boxShadow:"0 6px 18px rgba(0,0,0,.18)",background:"#fff"});document.body.appendChild(ghost);el.classList.add("dragging")}
+      ghost.style.left=(ev.clientX-el.offsetWidth/2)+"px"; ghost.style.top=(ev.clientY-20)+"px";
+      const t=document.elementFromPoint(ev.clientX,ev.clientY); const z=t&&t.closest(".zone,.pool");
+      if(over&&over!==z)over.classList.remove("over"); over=z; if(z)z.classList.add("over");
+    };
+    const up=()=>{
+      window.removeEventListener("pointermove",move); window.removeEventListener("pointerup",up);
+      if(!ghost)return; ghost.remove(); el.classList.remove("dragging");
+      if(over){over.classList.remove("over"); drop(el.dataset.id,over.dataset.zone)}
+      el._dragged=true; setTimeout(()=>el._dragged=false,0);
+    };
+    window.addEventListener("pointermove",move); window.addEventListener("pointerup",up);
+  };
+  const click=el.onclick; el.onclick=e=>{if(el._dragged)return; click(e)};
+}
+document.querySelectorAll(".zone").forEach(z=>z.onclick=()=>{if(sel)drop(sel,z.dataset.zone)});
+$("pool").onclick=()=>{if(sel)drop(sel,"")};
+
+$("check").onclick=()=>{
+  if(Object.keys(place).length<ITEMS.length){$("msg").textContent="Primero ubica todas las situaciones.";return}
+  let ok=0;
+  ITEMS.forEach(it=>{const el=document.querySelector(`.item[data-id="${it[0]}"]`);const g=place[it[0]]===it[2];ok+=g;el.classList.add(g?"ok":"ko")});
+  $("msg").innerHTML=ok===ITEMS.length?`<span style="color:var(--good)">${ok}/${ITEMS.length} correctas · ¡Excelente!</span>`:`${ok}/${ITEMS.length} correctas · Mueve las que están en rojo y revisa otra vez.`;
+};
+$("reset").onclick=()=>{for(const k in place)delete place[k];sel=null;$("msg").textContent="";draw()};
+draw();
+</script>
+</body></html>

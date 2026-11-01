@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Casos interactivos</title></head><body>
+<!-- WIDGET 1 · CASOS INTERACTIVOS (Módulo 5) — Cartilla Olimpismo -->
+<style>
+  :root{--navy:#14213d;--red:#c8394d;--teal:#16708a;--soft:#eef2f7;--line:#dce1e9;--muted:#586379;
+    --good:#1d7f46;--good-bg:#e2f4e9;--mid:#a86400;--mid-bg:#fff1d8;--bad:#b3261e;--bad-bg:#fde4e2}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--navy);font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.45}
+  .wrap{padding:18px;display:flex;flex-direction:column;gap:14px;max-width:900px;margin:auto}
+  h1{font-family:Arial,sans-serif;font-size:22px;margin:0}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .role{all:unset;cursor:pointer;background:var(--soft);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;border:2px solid transparent;transition:.2s}
+  .role:hover{border-color:var(--line)}
+  .role[aria-pressed="true"]{background:var(--navy);color:#fff}
+  .role:focus-visible{outline:3px solid var(--teal)}
+  .role small{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red)}
+  .role b{font-family:Arial,sans-serif;font-size:17px}
+  .role .st{font-size:12px;opacity:.75}
+  .stage{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:220px}
+  .empty{margin:auto;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:8px}
+  .empty p{margin:0}
+  .hand{width:56px;height:56px;fill:var(--red);animation:tap 1.6s ease-in-out infinite}
+  @keyframes tap{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @media (prefers-reduced-motion:reduce){.hand{animation:none}}
+  .credit{font-size:11px;color:var(--muted);margin:0;text-align:right}
+  .dots{display:flex;gap:6px}.dots i{width:30px;height:5px;border-radius:3px;background:var(--line)}.dots i.on{background:var(--red)}
+  .tag{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .sit{background:var(--soft);border-radius:8px;padding:10px 12px}
+  .q{font-family:Arial,sans-serif;font-size:19px;font-weight:700;margin:0}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{all:unset;cursor:pointer;border:1.5px solid var(--line);border-radius:8px;padding:11px 14px;line-height:1.35;transition:.15s}
+  .opt:hover:not([disabled]){border-color:var(--navy)}
+  .opt:focus-visible{outline:3px solid var(--teal)}
+  .opt[disabled]{cursor:default;opacity:.55}
+  .opt.picked{opacity:1}
+  .good{background:var(--good-bg);border-color:var(--good)!important}
+  .mid{background:var(--mid-bg);border-color:var(--mid)!important}
+  .bad{background:var(--bad-bg);border-color:var(--bad)!important}
+  .fb{border-radius:8px;padding:11px 14px;border-left:5px solid}
+  .fb.good{border-color:var(--good)}.fb.mid{border-color:var(--mid)}.fb.bad{border-color:var(--bad)}
+  .fb strong{display:block;margin-bottom:2px}
+  .btn{all:unset;cursor:pointer;background:var(--red);color:#fff;font-weight:700;border-radius:8px;padding:10px 16px;align-self:flex-start}
+  .btn.alt{background:var(--navy)}
+  .btn:focus-visible{outline:3px solid var(--teal)}
+  .score{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .num{font-family:Arial,sans-serif;font-size:48px;font-weight:800;line-height:1}
+  .total{font-size:14px;color:var(--muted)}
+  @media (max-width:600px){.roles{grid-template-columns:1fr}.wrap{padding:12px}}
+</style>
+
+<div class="wrap">
+  <div>
+    <h1>Casos interactivos</h1>
+    <p class="sub">Elige un rol, toma 2 decisiones y recibe retroalimentación. Cada decisión vale de 0 a 3 puntos.</p>
+  </div>
+  <div class="roles" id="roles"></div>
+  <div class="stage" id="stage"><div class="empty">
+    <svg class="hand" viewBox="0 0 554.625 554.625" aria-hidden="true"><path d="M154.142,86.062c0-36.337,30.6-66.938,66.938-66.938s66.937,30.6,66.937,66.938v53.55c11.476-15.3,19.125-34.425,19.125-53.55C307.141,38.25,268.891,0,221.079,0c-47.812,0-86.062,38.25-86.062,86.062c0,21.038,7.65,40.163,19.125,53.55V86.062z"/><path d="M450.579,229.5c-11.475,0-21.037,3.825-28.688,9.562l0,0c0-26.775-21.037-47.812-47.812-47.812c-11.475,0-22.949,3.825-32.512,11.475c-7.65-19.125-24.863-30.6-43.988-30.6c-11.475,0-21.037,3.825-28.688,9.562V86.062c0-26.775-21.037-47.812-47.812-47.812s-47.812,21.038-47.812,47.812v170.212c-38.25-34.425-80.325-61.2-107.1-34.425c-38.25,38.25,42.075,112.837,103.275,225.675c43.988,78.412,105.188,107.1,166.387,107.1c89.888,0,162.562-72.675,162.562-162.562v-114.75C498.391,250.538,477.354,229.5,450.579,229.5z M479.266,319.388v72.675c0,74.588-65.024,143.438-143.438,143.438c-72.675,0-114.75-40.162-149.175-95.625c-72.675-126.225-126.225-183.6-107.1-204.638c21.037-21.037,72.675,24.863,112.837,66.938V86.062c0-15.3,13.387-28.688,28.688-28.688c15.3,0,28.688,13.388,28.688,28.688v200.812h19.125v-66.938c0-15.3,13.388-28.688,28.688-28.688c15.301,0,28.688,13.388,28.688,28.688v47.812h19.125v-28.688c0-15.3,13.388-28.688,28.688-28.688c15.301,0,28.688,13.388,28.688,28.688v47.812h19.125v-9.562c0-15.3,13.388-28.688,28.688-28.688c15.301,0,28.688,13.388,28.688,28.688V319.388z"/></svg>
+    <p>Selecciona un caso para comenzar</p></div></div>
+  <p class="total" id="total"></p>
+  <p class="credit">Ícono de mano por Yannick en Icon-Icons.com</p>
+</div>
+
+<script>
+const CASOS=[
+ {rol:"Entrenador",t:"Conflicto en equipo",s:"Dos titulares de tu equipo de baloncesto sub-17 discuten en el vestuario y el grupo se divide en dos bandos.",steps:[
+  {p:"Faltan 20 minutos para el entrenamiento. ¿Qué haces primero?",o:[
+   ["Los separo, les pido calma y los cito juntos después de la sesión para hablar.","good",3,"Contienes la emoción en caliente y abres el diálogo en frío. Inteligencia emocional + liderazgo."],
+   ["Los dejo fuera del entrenamiento como castigo inmediato.","mid",1,"Pones un límite, pero sin escucharlos: el conflicto queda latente."],
+   ["Hago como si no pasara nada y empiezo la sesión.","bad",0,"Evitar el conflicto lo agranda: el grupo percibe falta de liderazgo."]]},
+  {p:"En la conversación cada uno culpa al otro. ¿Cómo cierras?",o:[
+   ["Cada uno expresa cómo se sintió y juntos crean una norma de convivencia que presentan al equipo.","good",3,"Comunicación asertiva y respeto: ellos construyen la solución y la comparten."],
+   ["Decido yo quién tiene la razón y sanciono al otro.","mid",1,"Es rápido, pero uno sale resentido y los bandos siguen."],
+   ["Les advierto que si se repite, ambos quedan fuera del equipo.","bad",0,"La amenaza sin acuerdo no repara la amistad del grupo."]]}]},
+ {rol:"Gestor deportivo",t:"Presión por resultados",s:"La directiva exige ascender de división. Un patrocinador sugiere acortar la recuperación de un jugador lesionado para el partido decisivo.",steps:[
+  {p:"El médico indica 3 semanas más de recuperación. ¿Qué decides?",o:[
+   ["Respeto el criterio médico y explico a la directiva el riesgo de recaída con datos.","good",3,"Respeto por la salud y comunicación basada en evidencia. La excelencia no es ganar a cualquier costo."],
+   ["Pido una segunda opinión médica independiente antes de decidir.","mid",2,"Es razonable, siempre que no sea una forma de buscar el 'sí' que conviene."],
+   ["Lo convoco: es solo un partido.","bad",0,"Arriesgas la salud del deportista y vulneras el valor del respeto."]]},
+  {p:"El patrocinador amenaza con retirar el dinero. ¿Cómo respondes?",o:[
+   ["Propongo una reunión para mostrarle el plan deportivo a mediano plazo y otros beneficios de imagen.","good",3,"Negocias y resuelves el problema sin ceder en lo ético."],
+   ["Cedo para no perder el patrocinio.","bad",0,"El club pierde credibilidad y el mensaje a los deportistas es grave."],
+   ["Corto toda comunicación con el patrocinador.","mid",1,"Defiendes el valor, pero cierras puertas sin intentar el diálogo."]]}]},
+ {rol:"Docente de Educación Física",t:"Falta de compromiso",s:"En tu clase de 9.º grado un grupo de estudiantes no participa, se sienta en la grada y dice que \"eso no sirve para nada\".",steps:[
+  {p:"¿Cuál es tu primera acción?",o:[
+   ["Me acerco y les pregunto qué les gustaría hacer y qué los desmotiva.","good",3,"Escucha activa: entender antes de corregir. Inteligencia emocional."],
+   ["Les pongo cero frente a todo el grupo.","bad",0,"La exposición pública aumenta el rechazo y rompe el respeto mutuo."],
+   ["Los dejo sentados mientras no molesten.","mid",1,"Evitas el conflicto, pero renuncias a tu rol formativo."]]},
+  {p:"Te dicen que les aburre hacer siempre lo mismo. ¿Qué propones?",o:[
+   ["Que diseñen en equipo un juego modificado y lo dirijan en la próxima clase.","good",3,"Les das liderazgo y protagonismo: trabajo en equipo + excelencia."],
+   ["Explicarles con una presentación los beneficios de la actividad física.","mid",1,"Informas, pero no cambias su experiencia."],
+   ["Seguir igual: el programa es el programa.","bad",0,"Ignoras su opinión; el compromiso no se impone."]]}]}
+];
+const res={}; // puntaje por caso
+let ci=null, step=0, pts=0;
+const $=id=>document.getElementById(id);
+
+function drawRoles(){
+  $("roles").innerHTML=CASOS.map((c,i)=>`<button class="role" data-i="${i}" aria-pressed="${ci===i}">
+    <small>${c.rol}</small><b>${c.t}</b><span class="st">${res[i]!=null?"✔ Resuelto · "+res[i]+"/6 pts":"2 decisiones"}</span></button>`).join("");
+  document.querySelectorAll(".role").forEach(b=>b.onclick=()=>{ci=+b.dataset.i;step=0;pts=0;drawRoles();draw()});
+  const n=Object.keys(res).length, tot=Object.values(res).reduce((a,b)=>a+b,0);
+  $("total").textContent=n?`Casos resueltos: ${n} de 3 · Puntaje acumulado: ${tot}/${n*6}`:"";
+}
+
+function draw(){
+  const c=CASOS[ci], st=$("stage");
+  if(step>=c.steps.length){
+    res[ci]=pts; drawRoles();
+    const msg=pts>=5?["Actuación profesional sólida","Aplicaste los valores olímpicos con criterio."]:pts>=3?["Buen criterio, con aspectos por mejorar","Revisa la retroalimentación de cada decisión."]:["Vuelve a intentarlo","Repasa los módulos 2, 3 y 4 antes de repetir."];
+    st.innerHTML=`<span class="tag">${c.rol} · Resultado</span>
+      <div class="score"><span class="num">${pts}/6</span><div><b>${msg[0]}</b><br><span class="total">${msg[1]}</span></div></div>
+      <button class="btn alt" id="again">Repetir este caso</button>`;
+    $("again").onclick=()=>{step=0;pts=0;draw()};
+    return;
+  }
+  const s=c.steps[step];
+  st.innerHTML=`<div class="dots">${c.steps.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join("")}</div>
+    <span class="tag">${c.rol} · Decisión ${step+1} de ${c.steps.length}</span>
+    ${step===0?`<div class="sit"><b>Situación:</b> ${c.s}</div>`:""}
+    <p class="q">${s.p}</p>
+    <div class="opts">${s.o.map((o,j)=>`<button class="opt" data-j="${j}">${o[0]}</button>`).join("")}</div>
+    <div id="fb"></div>`;
+  st.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const o=s.o[+b.dataset.j]; pts+=o[2];
+    st.querySelectorAll(".opt").forEach(x=>x.setAttribute("disabled",""));
+    b.classList.add(o[1],"picked");
+    const label={good:"Buena decisión",mid:"Decisión parcial",bad:"Decisión a revisar"}[o[1]];
+    $("fb").innerHTML=`<div class="fb ${o[1]}"><strong>${label} · +${o[2]} pts</strong>${o[3]}</div>
+      <button class="btn" id="next" style="margin-top:10px">${step+1<c.steps.length?"Siguiente decisión →":"Ver resultado"}</button>`;
+    $("next").onclick=()=>{step++;draw()};
+  });
+}
+drawRoles();
+</script>
+
+</body></html>
