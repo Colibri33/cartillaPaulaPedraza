@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi perfil de habilidades</title>
+<!-- WIDGET P4 · MI PERFIL DE HABILIDADES (Módulo 3) — Cartilla de Paula Andrea Pedraza Núñez -->
+<style>
+  @font-face{font-family:"Matcha Style";src:local("Matcha Style"),url("MatchaStyle.ttf") format("truetype"),url("MatchaStyle.otf") format("opentype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:400;src:local("Creato Display"),local("CreatoDisplay-Regular"),url("CreatoDisplay-Regular.otf") format("opentype"),url("CreatoDisplay-Regular.ttf") format("truetype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:700;src:local("Creato Display Bold"),local("CreatoDisplay-Bold"),url("CreatoDisplay-Bold.otf") format("opentype"),url("CreatoDisplay-Bold.ttf") format("truetype");font-display:swap}
+  :root{--ink:#2b1240;--pink:#e23e7a;--orange:#f28c28;--lav:#f4eefa;--line:#e3d8ee;--muted:#6e5a80;
+    --good:#1f8a5b;--good-bg:#e1f4ea;--bad:#c62d3a;--bad-bg:#fde3e5}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--ink);font-family:"Creato Display","Segoe UI",Tahoma,Verdana,sans-serif;font-size:14.5px;line-height:1.4}
+  .wrap{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:920px;margin:auto}
+  h1{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:26px;font-weight:400;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .tabs{display:flex;gap:6px}
+  .tab{all:unset;cursor:pointer;border-radius:999px;padding:7px 14px;background:var(--lav);font-weight:700;font-size:13.5px}
+  .tab[aria-selected="true"]{background:var(--ink);color:#fff}
+  .grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;align-items:start}
+  .it{padding:7px 0;border-bottom:1px solid var(--line)}
+  .it label{display:flex;justify-content:space-between;gap:10px}
+  .it b{font-variant-numeric:tabular-nums;color:var(--pink);min-width:22px;text-align:right}
+  input[type=range]{width:100%;accent-color:var(--pink)}
+  .scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+  .radarbox{background:var(--lav);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;position:sticky;top:8px}
+  svg{width:100%;height:auto;display:block}
+  .tip{background:#fff;border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .sw{border:1.5px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;text-align:center;max-width:560px;margin:auto}
+  .sw .n{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--pink);text-transform:uppercase}
+  .sw p.q{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:18px;font-weight:700;margin:0}
+  .yn{display:flex;gap:10px;justify-content:center}
+  .btn{all:unset;cursor:pointer;background:var(--pink);color:#fff;font-weight:700;border-radius:999px;padding:10px 22px}
+  .btn.no{background:var(--ink)}
+  .btn:focus-visible,.tab:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+  .fb{border-radius:8px;padding:10px 12px;border-left:5px solid;text-align:left}
+  .fb.good{background:var(--good-bg);border-color:var(--good)}.fb.bad{background:var(--bad-bg);border-color:var(--bad)}
+  [hidden]{display:none!important}
+  @media (max-width:680px){.grid{grid-template-columns:1fr}.radarbox{position:static}.wrap{padding:12px}}
+</style></head><body>
+<div class="wrap">
+  <div><h1>Mi perfil de habilidades</h1><p class="sub">Mueve cada barra de 1 a 10 según qué tan cierta es la frase para ti. Tu gráfico se dibuja en vivo.</p></div>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true" data-t="a">1. Autodiagnóstico</button><button class="tab" role="tab" aria-selected="false" data-t="b">2. ¿Lo harías?</button></div>
+  <section id="a">
+    <div class="grid">
+      <div id="items"></div>
+      <div class="radarbox"><svg id="radar" viewBox="-60 0 440 310" role="img" aria-label="Gráfico de habilidades"></svg><div class="tip" id="tip"></div></div>
+    </div>
+  </section>
+  <section id="b" hidden><div class="sw" id="sw"></div></section>
+</div>
+<script>
+const SK=["Liderazgo","Comunicación","Trabajo en equipo","Inteligencia emocional","Resolución de problemas"];
+const IT=[
+ [0,"Cuando el equipo está desordenado, tomo la iniciativa para organizarlo."],[0,"Doy el ejemplo con mi puntualidad y mi esfuerzo."],
+ [1,"Explico mis ideas de forma clara y corta."],[1,"Pregunto y escucho antes de dar mi opinión."],
+ [2,"Me alegro de los logros de mis compañeras como si fueran míos."],[2,"Acepto el rol que el equipo necesita, aunque no sea el principal."],
+ [3,"Después de un error vuelvo a concentrarme rápido."],[3,"Noto cuando una compañera está mal aunque no lo diga."],
+ [4,"Si un plan no funciona, propongo otro rápidamente."],[4,"Antes de decidir, pienso en las consecuencias de cada opción."]
+];
+const RETO=["Ofrécete a dirigir el calentamiento de tu próxima práctica.","Practica dar una instrucción en menos de 15 segundos y pide que te la repitan.","En tu próxima práctica, haz pareja con alguien con quien casi no trabajas.","Antes de responder en un momento tenso, respira y cuenta hasta 5.","Ante el próximo imprevisto, escribe dos soluciones antes de elegir una."];
+const SW=[
+ ["Tu compañera comete el error final y el equipo pierde. ¿Te acercas a darle ánimo antes de irte?",1,"Apoyar a una compañera después del error es inteligencia emocional y amistad.","Evitarla deja sola a quien más lo necesita. El equipo se construye también en la derrota."],
+ ["La árbitra pita una falta que crees injusta. ¿Le reclamas a gritos para presionarla?",0,"Respetar a la árbitra, incluso en desacuerdo, es parte del juego limpio.","Gritar a la árbitra va contra el respeto. Si tienes dudas, la capitana puede preguntar con calma."],
+ ["En un entrenamiento faltan balones para todas. ¿Inventas un ejercicio donde se compartan por parejas?",1,"Adaptarte al recurso disponible es resolución de problemas.","Esperar o cancelar desperdicia el tiempo de entrenamiento."],
+ ["Una jugadora nueva no conoce a nadie. ¿Esperas a que ella se integre sola?",0,"Integrarla activamente es trabajo en equipo y amistad.","Esperar puede hacer que se aísle. Un gesto pequeño cambia su experiencia."]
+];
+const $=id=>document.getElementById(id);
+let v=Array(IT.length).fill(5); try{const s=JSON.parse(localStorage.getItem("paula-perfil")||"null");if(Array.isArray(s)&&s.length===IT.length)v=s}catch(e){}
+$("items").innerHTML=IT.map((it,i)=>`<div class="it"><label for="s${i}"><span>${i+1}. ${it[1]}</span><b id="b${i}">${v[i]}</b></label><input type="range" id="s${i}" min="1" max="10" value="${v[i]}" data-i="${i}"></div>`).join("")+`<div class="scale"><span>1 = casi nunca</span><span>10 = siempre</span></div>`;
+document.querySelectorAll("[data-i]").forEach(r=>r.oninput=()=>{v[+r.dataset.i]=+r.value;$("b"+r.dataset.i).textContent=r.value;try{localStorage.setItem("paula-perfil",JSON.stringify(v))}catch(e){}radar()});
+
+function radar(){
+  const sc=SK.map((_,k)=>(v[k*2]+v[k*2+1])/2);
+  const cx=160,cy=155,R=95,ang=k=>-Math.PI/2+k*2*Math.PI/5,P=(k,r)=>[cx+r*Math.cos(ang(k)),cy+r*Math.sin(ang(k))];
+  let g="";
+  [2,4,6,8,10].forEach(l=>{g+=`<polygon points="${SK.map((_,k)=>P(k,R*l/10).join(",")).join(" ")}" fill="none" stroke="#e3d8ee" stroke-width="1"/>`});
+  SK.forEach((_,k)=>{const [x,y]=P(k,R);g+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e3d8ee"/>`});
+  g+=`<polygon points="${sc.map((s,k)=>P(k,R*s/10).join(",")).join(" ")}" fill="rgba(226,62,122,.25)" stroke="#e23e7a" stroke-width="2.5" stroke-linejoin="round"/>`;
+  sc.forEach((s,k)=>{const [x,y]=P(k,R*s/10);g+=`<circle cx="${x}" cy="${y}" r="4.5" fill="#f28c28" stroke="#2b1240" stroke-width="1.5"/>`});
+  SK.forEach((n,k)=>{const [x,y]=P(k,R+22);const a=Math.abs(x-cx)<10?"middle":x>cx?"start":"end";
+    const words=n.split(" ");const l1=words.length>2?words.slice(0,2).join(" "):words[0],l2=words.length>2?words.slice(2).join(" "):words.slice(1).join(" ");
+    g+=`<text x="${x}" y="${y}" text-anchor="${a}" font-size="11.5" font-weight="700" fill="#2b1240" font-family="Segoe UI,Verdana,sans-serif">${l1}${l2?`<tspan x="${x}" dy="13">${l2}</tspan>`:""}<tspan x="${x}" dy="13" font-weight="400" fill="#6e5a80">${sc[k].toFixed(1)}</tspan></text>`});
+  $("radar").innerHTML=g;
+  const max=sc.indexOf(Math.max(...sc)),min=sc.indexOf(Math.min(...sc));
+  if(Math.max(...sc)===Math.min(...sc)){$("tip").innerHTML="Mueve las barras de la izquierda para descubrir tu fortaleza y lo que debes entrenar.";return}
+  $("tip").innerHTML=`<b>Tu fortaleza:</b> ${SK[max]}<br><b>Por entrenar:</b> ${SK[min]}<br><b>Reto de la semana:</b> ${RETO[min]}`;
+}
+radar();
+
+let si=0, sok=0;
+function sw(){
+  const box=$("sw");
+  if(si>=SW.length){box.innerHTML=`<span class="n">Resultado</span><p class="q">${sok} de ${SW.length} decisiones alineadas con los valores olímpicos</p><button class="btn" id="re" style="align-self:center">Repetir</button>`;$("re").onclick=()=>{si=0;sok=0;sw()};return}
+  const s=SW[si];
+  box.innerHTML=`<span class="n">Escenario ${si+1} de ${SW.length}</span><p class="q">${s[0]}</p><div class="yn"><button class="btn" data-a="1">Sí, lo haría</button><button class="btn no" data-a="0">No</button></div><div id="sfb"></div>`;
+  box.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const ok=+b.dataset.a===s[1];if(ok)sok++;
+    box.querySelectorAll("[data-a]").forEach(x=>x.style.pointerEvents="none");
+    $("sfb").innerHTML=`<div class="fb ${ok?"good":"bad"}"><b>${ok?"¡Bien!":"Piénsalo de nuevo."}</b> ${ok?s[2]:s[3]}</div><button class="btn" id="nx" style="margin-top:10px">${si+1<SW.length?"Siguiente →":"Ver resultado"}</button>`;
+    $("nx").onclick=()=>{si++;sw()}});
+}
+sw();
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));$("a").hidden=t.dataset.t!=="a";$("b").hidden=t.dataset.t!=="b"});
+</script>
+</body></html>
