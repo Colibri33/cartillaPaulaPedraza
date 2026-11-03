@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Canasta de valores</title>
+<!-- WIDGET P2 · CANASTA DE VALORES: QUIZ + JUEGO DE TIROS (Módulo 8) — Cartilla de Paula Andrea Pedraza Núñez -->
+<style>
+  @font-face{font-family:"Matcha Style";src:local("Matcha Style"),url("MatchaStyle.ttf") format("truetype"),url("MatchaStyle.otf") format("opentype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:400;src:local("Creato Display"),local("CreatoDisplay-Regular"),url("CreatoDisplay-Regular.otf") format("opentype"),url("CreatoDisplay-Regular.ttf") format("truetype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:700;src:local("Creato Display Bold"),local("CreatoDisplay-Bold"),url("CreatoDisplay-Bold.otf") format("opentype"),url("CreatoDisplay-Bold.ttf") format("truetype");font-display:swap}
+  :root{--ink:#2b1240;--pink:#e23e7a;--orange:#f28c28;--lav:#f4eefa;--line:#e3d8ee;--muted:#6e5a80;--good:#1f8a5b;--good-bg:#e1f4ea;--bad:#c62d3a;--bad-bg:#fde3e5;--wood:#e9b77c;--wood2:#d99c5c}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--ink);font-family:"Creato Display","Segoe UI",Tahoma,Verdana,sans-serif;font-size:15px;line-height:1.45;overflow-x:hidden}
+  .wrap{padding:14px 16px;display:flex;flex-direction:column;gap:10px;max-width:900px;margin:auto}
+  h1{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:28px;font-weight:400;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .board{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:#fff;border-radius:14px;padding:8px 14px;flex-wrap:wrap}
+  .board .lb{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#d9c8ea}
+  .board .v{font-family:"Matcha Style","Trebuchet MS",sans-serif;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+  .board .v.or{color:var(--orange)}
+  .court{position:relative;height:240px;border-radius:16px;overflow:hidden;background:linear-gradient(#f6eefc 0 58%,var(--wood) 58%);}
+  .court:after{content:"";position:absolute;left:0;right:0;top:58%;height:3px;background:var(--wood2)}
+  .kira{position:absolute;left:4%;bottom:6px;width:110px;height:144px}
+  .kira svg{width:100%;height:100%}
+  .kira.bump svg{animation:bump .5s ease-out}
+  .hoop{position:absolute;right:6%;top:22px;width:130px;height:150px}
+  .pole{position:absolute;right:20px;top:60px;width:10px;bottom:-200px;background:#7b6a8a;border-radius:4px}
+  .backboard{position:absolute;right:0;top:0;width:120px;height:78px;background:#fff;border:4px solid var(--ink);border-radius:6px}
+  .backboard:after{content:"";position:absolute;left:36px;top:30px;width:40px;height:30px;border:3px solid var(--pink)}
+  .rim{position:absolute;right:30px;top:70px;width:66px;height:10px;border-radius:50%;border:4px solid var(--orange);z-index:3}
+  .net{position:absolute;right:36px;top:76px;width:54px;height:44px;z-index:2;
+    background:repeating-linear-gradient(60deg,transparent 0 7px,rgba(43,18,64,.45) 7px 8.5px),repeating-linear-gradient(-60deg,transparent 0 7px,rgba(43,18,64,.45) 7px 8.5px);
+    clip-path:polygon(0 0,100% 0,82% 100%,18% 100%);transform-origin:top}
+  .net.swish{animation:swish .5s ease-out}
+  .ball{position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;z-index:4;pointer-events:none;
+    background:radial-gradient(circle at 35% 30%,#ffb46a,#e2711d 60%,#b8540f);box-shadow:inset 0 0 0 2px #7a3a0b}
+  .ball:before,.ball:after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-left-color:#7a3a0b;border-right-color:#7a3a0b;transform:scaleX(.45)}
+  .ball:after{transform:rotate(90deg) scaleX(.45)}
+  .pop{position:absolute;left:34%;top:14px;font-family:"Matcha Style","Trebuchet MS",sans-serif;font-size:34px;color:var(--pink);text-shadow:0 2px 0 #fff;opacity:0;transform:scale(.5);transition:.25s;z-index:5}
+  .pop.on{opacity:1;transform:scale(1)}
+  .meter{position:absolute;left:3%;right:3%;bottom:10px;height:18px;border-radius:9px;background:#fff;border:2px solid var(--ink);overflow:hidden;display:none;z-index:6}
+  .meter.on{display:block}
+  .meter .zone{position:absolute;top:0;bottom:0;background:#9be3bf}
+  .meter .zone.ok2{background:#3fc488}
+  .meter .needle{position:absolute;top:-2px;bottom:-2px;width:5px;margin-left:-2px;background:var(--pink);border-radius:2px}
+  .card{border:1.5px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .type{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pink)}
+  .q{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:21px;margin:0;line-height:1.2}
+  .opts{display:flex;flex-direction:column;gap:7px}
+  .opts.tf{flex-direction:row}.opts.tf .opt{flex:1;justify-content:center;font-weight:700}
+  .opt{all:unset;cursor:pointer;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .opt:hover:not([disabled]){border-color:var(--pink)}
+  .opt[disabled]{cursor:default}
+  .opt.good{background:var(--good-bg);border-color:var(--good)}.opt.bad{background:var(--bad-bg);border-color:var(--bad)}.opt.dim{opacity:.45}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hint{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);border:1.5px dashed var(--line);border-radius:999px;padding:5px 12px}
+  .hint[disabled]{opacity:.5;cursor:default}
+  .hinttxt{background:var(--lav);border-radius:8px;padding:8px 12px;font-size:14px}
+  .fb{border-radius:8px;padding:10px 13px;border-left:5px solid}
+  .fb.good{background:var(--good-bg);border-color:var(--good)}.fb.bad{background:var(--bad-bg);border-color:var(--bad)}
+  .btn{all:unset;cursor:pointer;background:var(--pink);color:#fff;font-weight:700;border-radius:999px;padding:10px 20px}
+  .btn.alt{background:var(--ink)}.btn.or{background:var(--orange);color:var(--ink)}
+  .btn:focus-visible,.opt:focus-visible,.hint:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+  .speech{background:var(--lav);border-radius:12px;padding:8px 12px;font-weight:700}
+  .speech b{color:var(--pink)}
+  .res{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .big{font-family:"Matcha Style","Trebuchet MS",sans-serif;font-size:56px;line-height:1}
+  .cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;animation:fall linear forwards}
+  @keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.12) rotate(-5deg)}60%{transform:scale(.96) rotate(3deg)}100%{transform:scale(1)}}
+  @keyframes swish{0%{transform:scaleY(1)}40%{transform:scaleY(1.35) scaleX(.9)}100%{transform:scaleY(1)}}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  .wave{transform-box:fill-box;transform-origin:0% 100%;animation:wv .8s ease-in-out infinite alternate}
+  @keyframes wv{from{transform:rotate(-10deg)}to{transform:rotate(14deg)}}
+  @media (prefers-reduced-motion:reduce){.wave,.cf,.net.swish{animation:none!important}}
+  @media (max-width:560px){.court{height:200px}.kira{width:80px;height:104px}.hoop{transform:scale(.8);transform-origin:top right}.opts.tf{flex-direction:column}}
+</style></head><body>
+<div class="wrap">
+  <div><h1>Canasta de valores</h1><p class="sub">Responde bien y gana un tiro. Detén la barra en la zona verde para encestar. Tu nota depende de las respuestas; las canastas son puntos extra de diversión.</p></div>
+  <div class="board"><div><div class="lb">Pregunta</div><div class="v" id="qn">1/10</div></div><div><div class="lb">Respuestas correctas</div><div class="v" id="ok">0</div></div><div><div class="lb">Puntos de canasta</div><div class="v or" id="pts">0</div></div></div>
+  <div class="court" id="court" aria-hidden="true">
+    <div class="kira" id="kira"></div>
+    <div class="hoop"><div class="pole"></div><div class="backboard"></div><div class="net" id="net"></div><div class="rim" id="rim"></div></div>
+    <div class="ball" id="ball"></div>
+    <div class="pop" id="pop"></div>
+    <div class="meter" id="meter"><div class="zone" style="left:58%;width:26%"></div><div class="zone ok2" style="left:66%;width:10%"></div><div class="needle" id="needle"></div></div>
+  </div>
+  <div class="speech" id="speech"><b>Kira:</b> <span id="say">¡Hola! Responde y te paso el balón.</span></div>
+  <div class="card" id="card"></div>
+</div>
+<template id="pj-idle"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 104 Q54 124 56 146" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="56" cy="150" r="8" fill="#9a6240"/><g class="wave"><path d="M132 104 Q154 90 160 66" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="160" cy="62" r="8" fill="#9a6240"/></g>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M90 76 Q100 85 110 76" stroke="#2b1240" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+</svg></template><template id="pj-good"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 102 Q48 78 52 52" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="52" cy="48" r="8" fill="#9a6240"/><path d="M132 102 Q152 78 148 52" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="148" cy="48" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M88 74 Q100 92 112 74 Z" fill="#2b1240"/><path d="M94 82 Q100 87 106 82 Q100 79 94 82Z" fill="#e23e7a"/>
+</svg></template><template id="pj-mid"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 104 Q54 124 56 146" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="56" cy="150" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M92 80 H108" stroke="#2b1240" stroke-width="3.5" stroke-linecap="round"/><path d="M132 104 Q144 120 116 96" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="114" cy="92" r="8" fill="#9a6240"/>
+</svg></template><template id="pj-bad"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 100 Q50 80 70 46" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="72" cy="42" r="8" fill="#9a6240"/><path d="M132 100 Q150 80 130 46" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="128" cy="42" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="7" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="7" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <ellipse cx="100" cy="80" rx="5" ry="7" fill="#2b1240"/>
+</svg></template>
+<script>
+const Q=[
+ {t:"vf",p:"La excelencia olímpica consiste únicamente en ganar medallas.",a:1,h:"Piensa en el progreso personal.",e:"Falso. La excelencia es dar lo mejor de una misma y mejorar, más allá del resultado."},
+ {t:"m",p:"¿Cuál de estos NO es uno de los tres valores olímpicos del COI?",o:["Respeto","Amistad","Competitividad","Excelencia"],a:2,h:"Los tres valores son excelencia, respeto y…",e:"Los valores olímpicos son excelencia, respeto y amistad."},
+ {t:"vf",p:"Rechazar el dopaje es una forma de vivir el valor del respeto.",a:0,h:"Respeto por las reglas, por el cuerpo y por las rivales.",e:"Verdadero. Implica respeto por las reglas, por la salud y por las demás competidoras."},
+ {t:"m",p:"Una entrenadora mantiene la calma y baja la tensión cuando su equipo pierde por un error arbitral. Está usando…",o:["Liderazgo autoritario","Inteligencia emocional","Planificación táctica","Resolución de problemas"],a:1,h:"Tiene que ver con regular emociones.",e:"Reconocer y regular emociones propias y ajenas es inteligencia emocional."},
+ {t:"m",p:"La regla “la canasta solo vale si todas tocaron el balón” promueve sobre todo…",o:["Trabajo en equipo","Excelencia individual","Velocidad de juego","Disciplina táctica"],a:0,h:"Nadie queda por fuera del juego.",e:"Obliga a cooperar y a incluir a todas: trabajo en equipo."},
+ {t:"vf",p:"Escuchar a las deportistas antes de sancionar es una pérdida de tiempo para una buena líder.",a:1,h:"Recuerda el caso de falta de compromiso.",e:"Falso. Escuchar permite entender las causas y tomar mejores decisiones."},
+ {t:"m",p:"En el campo multidimensional del deporte, organizar una carrera “cero residuos” se relaciona con la dimensión…",o:["Persona","Aula","Cultura","Naturaleza"],a:3,h:"Tiene que ver con el entorno.",e:"Cuidar el entorno al hacer deporte corresponde a la dimensión naturaleza."},
+ {t:"m",p:"Una gestora que presenta datos a la junta en lugar de discutir a gritos aplica…",o:["Comunicación basada en evidencia","Trabajo en equipo","Amistad","Liderazgo autoritario"],a:0,h:"Usa información para convencer.",e:"Comunicar con datos es una forma profesional y respetuosa de influir en decisiones."},
+ {t:"vf",p:"Ayudar a una rival lesionada durante la competencia es un ejemplo del valor de la amistad.",a:0,h:"Piensa en el caso de softball analizado en la cartilla.",e:"Verdadero. La amistad olímpica va más allá de la camiseta del equipo."},
+ {t:"m",p:"Si un equipo gana pero su entrenadora humilla a las jugadoras, la gestora debería…",o:["No intervenir porque gana","Despedirla sin escucharla","Intervenir con diálogo, normas claras y seguimiento","Pedir a las jugadoras que aguanten"],a:2,h:"El respeto está por encima del marcador.",e:"Ganar no justifica el maltrato: se interviene con diálogo, normas y seguimiento."}
+];
+
+const $=id=>document.getElementById(id);
+let i=0,score=0,right=0,pts=0,usedHint=false,res=[];
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function pose(p,t){const k=$("kira");k.innerHTML=$("pj-"+p).innerHTML;k.classList.remove("bump");void k.offsetWidth;k.classList.add("bump");if(t)$("say").textContent=t}
+function confetti(n){if(RM)return;const C=["#e23e7a","#f28c28","#2b1240","#7b4fa0","#3fa7d6"];for(let k=0;k<n;k++){const d=document.createElement("i");d.className="cf";d.style.left=Math.random()*100+"vw";d.style.background=C[k%5];d.style.animationDuration=(1.3+Math.random()*1.5)+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}}
+function board(){$("qn").textContent=Math.min(i+1,Q.length)+"/"+Q.length;$("ok").textContent=right;$("pts").textContent=pts}
+function geo(){const c=$("court").getBoundingClientRect(),k=$("kira").getBoundingClientRect(),r=$("rim").getBoundingClientRect();
+  return {sx:k.right-c.left-30,sy:k.top-c.top+40,hx:r.left-c.left+r.width/2-15,hy:r.top-c.top-14,w:c.width,h:c.height}}
+function placeBall(){const g=geo(),b=$("ball");b.getAnimations().forEach(a=>a.cancel());b.style.transform=`translate(${g.sx}px,${g.sy}px)`}
+/* tiro: kind = "swish" | "rim" | "miss" */
+function shoot(kind,done){
+  const g=geo(),b=$("ball");let ex=g.hx,ey=g.hy,peak=Math.min(g.sy,ey)-90;
+  if(kind==="miss"){ex=g.hx-55;ey=g.hy+6}
+  const frames=[];const N=24;for(let n=0;n<=N;n++){const t=n/N;const x=g.sx+(ex-g.sx)*t;const y=(1-t)*(1-t)*g.sy+2*(1-t)*t*peak+t*t*ey;frames.push({transform:`translate(${x}px,${y}px) rotate(${t*540}deg)`})}
+  const after=[];
+  if(kind==="swish"){for(let n=1;n<=8;n++)after.push({transform:`translate(${ex}px,${ey+n*12}px) rotate(${540+n*20}deg)`})}
+  if(kind==="rim"){after.push({transform:`translate(${ex+14}px,${ey-16}px) rotate(600deg)`},{transform:`translate(${ex-6}px,${ey-6}px) rotate(640deg)`},{transform:`translate(${ex}px,${ey+40}px) rotate(700deg)`},{transform:`translate(${ex}px,${ey+96}px) rotate(760deg)`})}
+  if(kind==="miss"){after.push({transform:`translate(${ex-20}px,${ey+60}px) rotate(620deg)`},{transform:`translate(${ex-60}px,${g.h*0.62}px) rotate(700deg)`},{transform:`translate(${ex-90}px,${g.h*0.45}px) rotate(760deg)`},{transform:`translate(${ex-120}px,${g.h*0.66}px) rotate(820deg)`})}
+  const all=frames.concat(after);
+  if(RM){b.style.transform=all[all.length-1].transform;done&&done();return}
+  b.animate(all,{duration:1300,easing:"linear",fill:"forwards"}).onfinish=()=>{done&&done()};
+  if(kind!=="miss")setTimeout(()=>{const n=$("net");n.classList.remove("swish");void n.offsetWidth;n.classList.add("swish")},780);
+}
+function popTxt(t){const p=$("pop");p.textContent=t;p.classList.add("on");setTimeout(()=>p.classList.remove("on"),1100)}
+/* barra de potencia */
+let raf=null,pos=0,dir=1;
+function meter(onStop){const m=$("meter"),nd=$("needle");m.classList.add("on");pos=0;dir=1;
+  const tick=()=>{pos+=dir*1.6;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}nd.style.left=pos+"%";raf=requestAnimationFrame(tick)};tick();
+  return ()=>{cancelAnimationFrame(raf);m.classList.remove("on");onStop(pos)}}
+function show(){board();placeBall();const c=$("card");
+  if(i>=Q.length){const nota=(score/Q.length*10).toFixed(1);const md=nota>=8?"oro":nota>=6?"plata":"bronce";
+    try{localStorage.setItem("paula-quiz",nota)}catch(e){}
+    pose(nota>=6?"good":"mid",nota>=8?"¡Oro! Partidazo.":nota>=6?"¡Plata! Muy bien jugado.":"Bronce. ¡Repasa y vuelve a la cancha!");if(nota>=6)confetti(110);
+    c.innerHTML=`<div class="res">${MEDAL(md)}<span class="big">${nota}</span><div><b style="font-size:18px">Nota sobre 10</b><p class="sub">${right} de ${Q.length} correctas · ${res.filter(r=>r===.5).length} con pista · ${pts} puntos de canasta</p></div></div><button class="btn alt" id="again" style="align-self:flex-start">Jugar otra vez</button>`;
+    $("again").onclick=()=>{i=0;score=0;right=0;pts=0;res=[];pose("idle","¡Otra ronda! Te paso el balón.");show()};return}
+  usedHint=false;const q=Q[i];const opts=q.t==="vf"?["Verdadero","Falso"]:q.o;
+  c.innerHTML=`<span class="type">${q.t==="vf"?"Verdadero o falso":"Selección múltiple"} · Pregunta ${i+1} de ${Q.length}</span><p class="q">${q.p}</p>
+    <div class="opts ${q.t==="vf"?"tf":""}">${opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join("")}</div>
+    <div class="row"><button class="hint" id="hint">💡 Pedir pista (vale ½)</button></div><div id="ht"></div><div id="fb"></div>`;
+  $("hint").onclick=()=>{usedHint=true;$("hint").setAttribute("disabled","");$("ht").innerHTML=`<div class="hinttxt">${q.h}</div>`;pose("mid","Aquí va una ayudita…")};
+  c.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a,val=ok?(usedHint?.5:1):0;score+=val;res[i]=val;if(ok)right++;
+    c.querySelectorAll(".opt").forEach((x,k)=>{x.setAttribute("disabled","");if(k===q.a)x.classList.add("good");else if(k!==j)x.classList.add("dim")});
+    if(!ok)b.classList.add("bad");$("hint").setAttribute("disabled","");board();
+    const next=`<button class="btn" id="next" style="margin-top:10px">${i+1<Q.length?"Siguiente pregunta →":"Ver mi nota"}</button>`;
+    if(ok){pose("good","¡Correcto! Toma el balón: detén la barra en verde.");
+      $("fb").innerHTML=`<div class="fb good"><strong>¡Correcto!${usedHint?" (con pista: +½)":" +1"}</strong>${q.e}</div><div class="row" style="margin-top:10px"><button class="btn or" id="shot">🏀 ¡Lanzar!</button><span class="sub">Toca otra vez para soltar el balón.</span></div>`;
+      let stop=null;$("shot").onclick=()=>{if(!stop){stop=meter(p=>{$("shot").remove();
+          const kind=(p>=66&&p<=76)?"swish":(p>=58&&p<=84)?"rim":"miss";
+          shoot(kind,()=>{if(kind==="swish"){pts+=3;popTxt("¡SWISH! +3");confetti(40);pose("good","¡Limpia! Ni tocó el aro.")}else if(kind==="rim"){pts+=2;popTxt("¡Adentro! +2");pose("good","¡Entró con suspenso!")}else{popTxt("¡Uy, fuera!");pose("bad","Se fue, pero tu respuesta sí cuenta.")}board();
+            $("fb").insertAdjacentHTML("beforeend",next);$("next").onclick=()=>{i++;pose("idle","¡Siguiente pregunta!");show()}})});$("shot").textContent="✋ ¡Soltar!"}else{stop();stop=null}}}
+    else{pose("bad","Esta vez no… Lanzo yo y se va afuera.");shoot("miss");popTxt("¡Airball!");
+      $("fb").innerHTML=`<div class="fb bad"><strong>Incorrecto</strong>${q.e}</div>`+next;$("next").onclick=()=>{i++;pose("idle","¡Vamos con la siguiente!");show()}}});
+}
+const MEDAL=t=>{const c={oro:["#f2c14e","#b8860b"],plata:["#d5dbe3","#8a96a6"],bronce:["#d9915a","#9a5a2a"]}[t];return `<svg width="70" height="92" viewBox="0 0 74 96" aria-label="Medalla de ${t}" style="flex:none"><path d="M18 0h14l9 34H27z" fill="#e23e7a"/><path d="M56 0H42l-9 34h14z" fill="#2b1240"/><circle cx="37" cy="62" r="28" fill="${c[0]}" stroke="${c[1]}" stroke-width="5"/><text x="37" y="69" text-anchor="middle" font-family="Arial" font-weight="900" font-size="18" fill="${c[1]}">${t==="oro"?"1":t==="plata"?"2":"3"}</text></svg>`};
+addEventListener("resize",()=>{if(!document.querySelector(".ball").getAnimations().length)placeBall()});
+pose("idle");show();
+</script>
+</body></html>
