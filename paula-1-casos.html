@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Casos profesionales</title>
+<!-- WIDGET P1 · CASOS PROFESIONALES (Módulo 5) — Cartilla de Paula Andrea Pedraza Núñez -->
+<style>
+  @font-face{font-family:"Matcha Style";src:local("Matcha Style"),url("MatchaStyle.ttf") format("truetype"),url("MatchaStyle.otf") format("opentype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:400;src:local("Creato Display"),local("CreatoDisplay-Regular"),url("CreatoDisplay-Regular.otf") format("opentype"),url("CreatoDisplay-Regular.ttf") format("truetype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:700;src:local("Creato Display Bold"),local("CreatoDisplay-Bold"),url("CreatoDisplay-Bold.otf") format("opentype"),url("CreatoDisplay-Bold.ttf") format("truetype");font-display:swap}
+  :root{--ink:#2b1240;--pink:#e23e7a;--orange:#f28c28;--lav:#f4eefa;--line:#e3d8ee;--muted:#6e5a80;
+    --good:#1f8a5b;--good-bg:#e1f4ea;--mid:#b86e00;--mid-bg:#fff0d9;--bad:#c62d3a;--bad-bg:#fde3e5}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--ink);font-family:"Creato Display","Segoe UI",Tahoma,Verdana,sans-serif;font-size:15px;line-height:1.45}
+  .wrap{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:920px;margin:auto}
+  h1{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:26px;font-weight:400;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{all:unset;cursor:pointer;border-radius:999px;padding:8px 14px;background:var(--lav);font-weight:700;font-size:13.5px;display:flex;gap:6px;align-items:center}
+  .tab[aria-selected="true"]{background:var(--ink);color:#fff}
+  .tab .ok{color:var(--good);font-size:12px}
+  .tab[aria-selected="true"] .ok{color:#9be3bf}
+  .tab:focus-visible,.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+  .board{background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .board .role{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:700}
+  .board b{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:18px;display:block}
+  .quarters{display:flex;gap:6px}
+  .quarters span{font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.12)}
+  .quarters span.on{background:var(--pink)}
+  .quarters span.done{background:rgba(255,255,255,.3)}
+  .pts{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+  .pts small{font-size:12px;font-weight:400;opacity:.75;display:block;text-align:right}
+  .stage{border:1.5px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:11px;min-height:240px}
+  .sit{background:var(--lav);border-radius:8px;padding:10px 12px}
+  .q{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:18px;font-weight:700;margin:0}
+  .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .opt{all:unset;cursor:pointer;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;display:flex;flex-direction:column;gap:6px;transition:.15s}
+  .opt .k{width:24px;height:24px;border-radius:50%;background:var(--lav);display:grid;place-items:center;font-weight:700;font-size:12px}
+  .opt:hover:not([disabled]){border-color:var(--pink);transform:translateY(-2px)}
+  .opt[disabled]{cursor:default;opacity:.5}
+  .good{background:var(--good-bg);border-color:var(--good)!important;opacity:1!important}
+  .mid{background:var(--mid-bg);border-color:var(--mid)!important;opacity:1!important}
+  .bad{background:var(--bad-bg);border-color:var(--bad)!important;opacity:1!important}
+  .fb{border-radius:8px;padding:10px 13px;border-left:5px solid}
+  .fb strong{display:block}
+  .fb .skill{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;background:#fff;border-radius:999px;padding:2px 9px}
+  .btn{all:unset;cursor:pointer;background:var(--pink);color:#fff;font-weight:700;border-radius:999px;padding:10px 18px;align-self:flex-start}
+  .btn.alt{background:var(--ink)}
+  .final{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .ball{width:84px;height:84px;flex:none}
+  .stars{font-size:22px;color:var(--orange);letter-spacing:2px}
+  .summary{font-size:13.5px;color:var(--muted)}
+  @media (max-width:640px){.opts{grid-template-columns:1fr}.wrap{padding:12px}}
+
+  .mrow{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+  .mascot{width:96px;height:118px;display:flex;align-items:flex-end;justify-content:center}
+  .mascot svg{width:100%;height:100%;animation:hop 1.8s ease-in-out infinite;transform-origin:50% 100%}
+  .mascot.bump svg{animation:bump .6s ease-out,hop 1.8s ease-in-out .6s infinite}
+  .wave{transform-box:fill-box;transform-origin:0% 100%;animation:wv .8s ease-in-out infinite alternate}
+  .speech{position:relative;background:#fff;border:2.5px solid #2b1240;border-radius:16px;padding:10px 14px;font-weight:700;min-height:44px;display:flex;align-items:center}
+  .speech:before{content:"";position:absolute;left:-12px;top:50%;margin-top:-9px;border:9px solid transparent;border-right-color:#2b1240;border-left:0}
+  .speech b.nm{color:#e23e7a;margin-right:6px}
+  .cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;animation:fall linear forwards}
+  @keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-6deg)}60%{transform:scale(.95) rotate(4deg)}100%{transform:scale(1)}}
+  @keyframes wv{from{transform:rotate(-10deg)}to{transform:rotate(14deg)}}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  @media (prefers-reduced-motion:reduce){.mascot svg,.wave,.cf{animation:none!important}}
+  @media (max-width:600px){.mrow{grid-template-columns:72px 1fr}.mascot{width:72px;height:90px}}
+</style></head><body>
+<div class="wrap">
+  <div class="mrow"><div class="mascot" id="mascot"></div><div class="speech" id="speech"><span><b class="nm">Kira:</b><span id="say">¡Hola! Soy Kira. Elige un rol y toma tus decisiones.</span></span></div></div>
+  <div><h1>Casos profesionales</h1><p class="sub">Elige un rol. Cada caso tiene 3 momentos: en cada uno tomas una decisión y recibes retroalimentación. Máximo 9 puntos por caso.</p></div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="board" id="board"></div>
+  <div class="stage" id="stage"></div>
+  <p class="summary" id="summary"></p>
+</div>
+<template id="pj-idle"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 104 Q54 124 56 146" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="56" cy="150" r="8" fill="#9a6240"/><g class="wave"><path d="M132 104 Q154 90 160 66" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="160" cy="62" r="8" fill="#9a6240"/></g>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M90 76 Q100 85 110 76" stroke="#2b1240" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+</svg></template><template id="pj-good"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 102 Q48 78 52 52" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="52" cy="48" r="8" fill="#9a6240"/><path d="M132 102 Q152 78 148 52" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="148" cy="48" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M88 74 Q100 92 112 74 Z" fill="#2b1240"/><path d="M94 82 Q100 87 106 82 Q100 79 94 82Z" fill="#e23e7a"/>
+</svg></template><template id="pj-mid"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 104 Q54 124 56 146" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="56" cy="150" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M92 80 H108" stroke="#2b1240" stroke-width="3.5" stroke-linecap="round"/><path d="M132 104 Q144 120 116 96" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="114" cy="92" r="8" fill="#9a6240"/>
+</svg></template><template id="pj-bad"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 100 Q50 80 70 46" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="72" cy="42" r="8" fill="#9a6240"/><path d="M132 100 Q150 80 130 46" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="128" cy="42" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="7" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="7" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <ellipse cx="100" cy="80" rx="5" ry="7" fill="#2b1240"/>
+</svg></template><script>
+const GOOD=["¡Eso es! Así se juega limpio.","¡Excelente decisión!","¡Bien hecho! Ese es el espíritu.","¡Lo lograste!"],MID=["Mmm… vas bien, pero se puede mejorar.","Casi, piensa en todas las personas involucradas.","Buena intención, revisa la explicación."],BAD=["¡Uy! Esa no fue la mejor jugada.","Ups… lee la explicación y vuelve a intentarlo.","¡Tranqui! De los errores también se aprende."];
+window.FUN={say(p,t){const m=document.getElementById("mascot");if(!m)return;m.innerHTML=document.getElementById("pj-"+p).innerHTML;m.classList.remove("bump");void m.offsetWidth;m.classList.add("bump");if(t)document.getElementById("say").textContent=t},
+confetti(n){const C=["#e23e7a","#f28c28","#2b1240","#7b4fa0","#3fa7d6"];if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;for(let i=0;i<(n||70);i++){const d=document.createElement("i");d.className="cf";d.style.left=Math.random()*100+"vw";d.style.background=C[i%C.length];d.style.animationDuration=(1.4+Math.random()*1.6)+"s";d.style.animationDelay=Math.random()*.4+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),3600)}},
+pick(a){return a[Math.floor(Math.random()*a.length)]}};
+FUN.say("idle");
+</script>
+<script>
+const CASOS=[
+ {rol:"Entrenadora",tipo:"Falta de compromiso",ctx:"Diriges un equipo de voleibol femenino sub-16. A dos semanas del torneo departamental, tres jugadoras faltan seguido a los entrenamientos y la capitana pasa el calentamiento con el celular.",q:[
+  {p:"Momento 1 · ¿Cómo abordas la situación?",o:[
+   ["Hablo con cada jugadora por separado para conocer qué está pasando.","good",3,"Escuchas antes de juzgar: puede haber razones de estudio, familia o motivación.","Inteligencia emocional"],
+   ["Anuncio frente a todo el equipo que quien falte no juega el torneo.","mid",1,"Pones un límite claro, pero sin entender las causas; puedes perder jugadoras.","Liderazgo"],
+   ["Lo dejo pasar: ya volverán cuando se acerque el torneo.","bad",0,"Ignorar la falta de compromiso afecta a quienes sí asisten y rompe el respeto al grupo.","—"]]},
+  {p:"Momento 2 · Dos jugadoras dicen que se aburren con los ejercicios repetitivos. ¿Qué haces?",o:[
+   ["Rediseño parte de la sesión con juegos reducidos y retos por equipos.","good",3,"Mantienes el objetivo técnico y cambias el medio: más motivación y participación.","Resolución de problemas"],
+   ["Les explico que el deporte exige repetición y sigo igual.","mid",1,"Es cierto, pero no aprovechas su retroalimentación para mejorar.","Comunicación"],
+   ["Les digo que si no les gusta pueden irse.","bad",0,"Cierras la puerta al diálogo y pierdes la confianza del grupo.","—"]]},
+  {p:"Momento 3 · La capitana sigue con el celular en el calentamiento. ¿Cómo cierras el caso?",o:[
+   ["Acordamos con todo el equipo normas de convivencia y la capitana las presenta.","good",3,"Le devuelves su rol de líder y el grupo construye sus propias reglas.","Liderazgo"],
+   ["Le quito la capitanía sin hablar con ella.","mid",1,"Corriges la conducta, pero sin diálogo ella puede desmotivarse más.","Liderazgo"],
+   ["Le grito frente a todas para que aprenda.","bad",0,"La humillación pública va contra el respeto y daña el clima del equipo.","—"]]}]},
+ {rol:"Docente de Educación Física",tipo:"Conflicto en equipo",ctx:"En tu clase mixta de 10.º grado juegan fútbol. Un grupo de chicos no les pasa el balón a las chicas y, cuando una lo reclama, se arma una discusión fuerte en la cancha.",q:[
+  {p:"Momento 1 · La discusión sube de tono. ¿Qué haces primero?",o:[
+   ["Detengo el juego, separo a las partes y pido un minuto de calma.","good",3,"Frenas el conflicto en caliente sin señalar culpables frente a todos.","Inteligencia emocional"],
+   ["Expulso de la clase a quienes discuten.","mid",1,"Controlas el momento, pero el problema de fondo (la exclusión) sigue.","Liderazgo"],
+   ["Dejo que lo resuelvan solos; así aprenden.","bad",0,"Sin mediación, el conflicto puede escalar y reforzar la exclusión.","—"]]},
+  {p:"Momento 2 · ¿Cómo atiendes la exclusión de las chicas?",o:[
+   ["Propongo una regla: el gol solo vale si todas las personas del equipo tocaron el balón.","good",3,"Una regla de juego modificado transforma la conducta desde la práctica.","Resolución de problemas"],
+   ["Separo la clase: chicos por un lado y chicas por otro.","mid",1,"Evitas el roce, pero no educas en respeto ni en trabajo conjunto.","Trabajo en equipo"],
+   ["Les doy una charla de 20 minutos sobre igualdad.","mid",1,"El mensaje es valioso, pero sin práctica el aprendizaje es menor.","Comunicación"]]},
+  {p:"Momento 3 · Al final de la clase, ¿cómo cierras?",o:[
+   ["Hago un círculo de reflexión: ¿qué sentimos y qué aprendimos hoy del respeto?","good",3,"La reflexión convierte el conflicto en aprendizaje de valores.","Comunicación"],
+   ["Pongo una nota baja a todo el grupo.","bad",0,"El castigo colectivo genera resentimiento y no enseña.","—"],
+   ["Termino la clase sin mencionar lo ocurrido.","mid",1,"Se pierde la oportunidad formativa del conflicto.","—"]]}]},
+ {rol:"Gestora deportiva",tipo:"Presión por resultados",ctx:"Coordinas el área de deporte femenino de un club. La junta directiva quiere eliminar las categorías infantiles y pasar todo el presupuesto al equipo mayor para ganar la liga.",q:[
+  {p:"Momento 1 · ¿Cuál es tu primera respuesta a la junta?",o:[
+   ["Pido tiempo para presentar datos del impacto de las categorías formativas.","good",3,"Respondes con evidencia y no con emociones: comunicación profesional.","Comunicación"],
+   ["Acepto: lo importante es ganar este año.","bad",0,"Sacrificas la formación y el futuro del club por un resultado inmediato.","—"],
+   ["Me niego rotundamente y abandono la reunión.","mid",1,"Defiendes un valor, pero cierras el diálogo con quien decide.","Inteligencia emocional"]]},
+  {p:"Momento 2 · Te enteras de que la entrenadora del equipo mayor gana partidos, pero humilla a sus jugadoras. ¿Qué haces?",o:[
+   ["Hablo con ella, establezco un código de conducta y hago seguimiento.","good",3,"Ganar no justifica el maltrato: el respeto está por encima del marcador.","Liderazgo"],
+   ["No intervengo mientras siga ganando.","bad",0,"Avalas el maltrato y vulneras la integridad de las deportistas.","—"],
+   ["La despido de inmediato sin escucharla.","mid",1,"Proteges a las jugadoras, pero sin debido proceso ni oportunidad de cambio.","Resolución de problemas"]]},
+  {p:"Momento 3 · ¿Qué propuesta final llevas a la junta?",o:[
+   ["Un plan mixto: mantener categorías infantiles con patrocinio local y metas medibles para el equipo mayor.","good",3,"Equilibras excelencia deportiva y formación: solución creativa y sostenible.","Resolución de problemas"],
+   ["Pedir más dinero a las familias para no tocar nada.","mid",1,"Puede funcionar, pero traslada el problema y excluye a quien no puede pagar.","—"],
+   ["Renunciar al cargo.","bad",0,"Abandonas a las deportistas justo cuando más necesitan liderazgo.","—"]]}]}
+];
+const R={}; let ci=0, step=0, pts=0, picks=[];
+const $=id=>document.getElementById(id);
+try{Object.assign(R,JSON.parse(localStorage.getItem("paula-casos")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("paula-casos",JSON.stringify(R))}catch(e){}};
+const BALL=`<svg class="ball" viewBox="0 0 100 100" aria-hidden="true"><path d="M30 4h40l-12 34H42z" fill="#e23e7a"/><circle cx="50" cy="64" r="32" fill="#f28c28" stroke="#2b1240" stroke-width="4"/><path d="M50 46l5.3 10.8 11.9 1.7-8.6 8.4 2 11.9L50 73.2l-10.6 5.6 2-11.9-8.6-8.4 11.9-1.7z" fill="#fff"/></svg>`;
+
+function tabs(){
+  $("tabs").innerHTML=CASOS.map((c,i)=>`<button class="tab" role="tab" aria-selected="${i===ci}" data-i="${i}">${c.rol}${R[i]!=null?`<span class="ok">✔ ${R[i]}/9</span>`:""}</button>`).join("");
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{ci=+t.dataset.i;step=0;pts=0;picks=[];tabs();draw()});
+  const n=Object.keys(R).length;
+  $("summary").textContent=n?`Casos resueltos: ${n} de 3 · Puntos totales: ${Object.values(R).reduce((a,b)=>a+b,0)} de ${n*9}`:"";
+}
+function board(){
+  const c=CASOS[ci];
+  $("board").innerHTML=`<div><span class="role">${c.rol} · ${c.tipo}</span><b>${step<3?"Momento "+(step+1)+" de 3":"Resultado final"}</b></div>
+   <div class="quarters">${[0,1,2].map(i=>`<span class="${i===step?"on":i<step?"done":""}">M${i+1}</span>`).join("")}</div>
+   <div class="pts">${pts}<small>puntos</small></div>`;
+}
+function draw(){
+  const c=CASOS[ci], st=$("stage"); board();
+  if(step>=3){
+    R[ci]=pts; save(); tabs();FUN.say(pts>=8?"good":pts>=5?"mid":"bad",pts>=8?"¡Actuación de campeona!":pts>=5?"Vas muy bien, ajusta los detalles.":"¡Otra vez! Yo te acompaño.");if(pts>=8)FUN.confetti();
+    const nivel=pts>=8?["Actuación profesional sólida","★★★"]:pts>=5?["Buen criterio, con ajustes por hacer","★★☆"]:["Vale la pena repetir este caso","★☆☆"];
+    st.innerHTML=`<div class="final">${BALL}<div><div class="stars">${nivel[1]}</div><b style="font-size:18px">${nivel[0]}</b><p class="sub">Obtuviste ${pts} de 9 puntos.</p></div></div>
+     <p class="sub"><b>Habilidades que pusiste en juego:</b> ${[...new Set(picks.filter(s=>s!=="—"))].join(", ")||"ninguna todavía"}.</p>
+     <button class="btn alt" id="again">Repetir este caso</button>`;
+    $("again").onclick=()=>{step=0;pts=0;picks=[];draw()}; return;
+  }
+  const s=c.q[step];
+  st.innerHTML=`${step===0?`<div class="sit"><b>Situación:</b> ${c.ctx}</div>`:""}<p class="q">${s.p}</p>
+    <div class="opts">${s.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="k">${"ABC"[j]}</span><span>${o[0]}</span></button>`).join("")}</div><div id="fb"></div>`;
+  st.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const o=s.o[+b.dataset.j]; pts+=o[2]; picks.push(o[4]); board();
+    st.querySelectorAll(".opt").forEach(x=>x.setAttribute("disabled",""));
+    b.classList.add(o[1]);FUN.say(o[1],FUN.pick({good:GOOD,mid:MID,bad:BAD}[o[1]]));if(o[1]==="good")FUN.confetti(40);
+    const lab={good:"Buena decisión",mid:"Decisión a medias",bad:"Decisión a revisar"}[o[1]];
+    $("fb").innerHTML=`<div class="fb ${o[1]}"><strong>${lab} · +${o[2]} pts</strong>${o[3]}${o[4]!=="—"?`<br><span class="skill">Habilidad: ${o[4]}</span>`:""}</div>
+      <button class="btn" id="next" style="margin-top:10px">${step<2?"Siguiente momento →":"Ver resultado final"}</button>`;
+    $("next").onclick=()=>{step++;draw()};
+  });
+}
+tabs(); draw();
+</script>
+</body></html>

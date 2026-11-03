@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quiz final</title>
+<!-- WIDGET P2 · QUIZ FINAL (Módulo 8) — Cartilla de Paula Andrea Pedraza Núñez -->
+<style>
+  @font-face{font-family:"Matcha Style";src:local("Matcha Style"),url("MatchaStyle.ttf") format("truetype"),url("MatchaStyle.otf") format("opentype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:400;src:local("Creato Display"),local("CreatoDisplay-Regular"),url("CreatoDisplay-Regular.otf") format("opentype"),url("CreatoDisplay-Regular.ttf") format("truetype");font-display:swap}
+  @font-face{font-family:"Creato Display";font-weight:700;src:local("Creato Display Bold"),local("CreatoDisplay-Bold"),url("CreatoDisplay-Bold.otf") format("opentype"),url("CreatoDisplay-Bold.ttf") format("truetype");font-display:swap}
+  :root{--ink:#2b1240;--pink:#e23e7a;--orange:#f28c28;--lav:#f4eefa;--line:#e3d8ee;--muted:#6e5a80;
+    --good:#1f8a5b;--good-bg:#e1f4ea;--bad:#c62d3a;--bad-bg:#fde3e5}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--ink);font-family:"Creato Display","Segoe UI",Tahoma,Verdana,sans-serif;font-size:15px;line-height:1.45}
+  .wrap{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:900px;margin:auto}
+  h1{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:26px;font-weight:400;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0}
+  .shots{display:flex;gap:6px;flex-wrap:wrap}
+  .shot{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted)}
+  .shot.cur{border-color:var(--ink);color:var(--ink)}
+  .shot.hit{background:var(--orange);border-color:var(--orange);color:#fff}
+  .shot.half{background:linear-gradient(90deg,var(--orange) 50%,#fff 50%);border-color:var(--orange)}
+  .shot.miss{background:var(--lav);border-color:var(--bad);color:var(--bad)}
+  .card{border:1.5px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+  .type{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pink)}
+  .q{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:19px;font-weight:700;margin:0}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opts.tf{flex-direction:row}
+  .opts.tf .opt{flex:1;justify-content:center;font-weight:700;font-size:16px}
+  .opt{all:unset;cursor:pointer;border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;transition:.15s}
+  .opt:hover:not([disabled]){border-color:var(--pink)}
+  .opt[disabled]{cursor:default}
+  .opt.good{background:var(--good-bg);border-color:var(--good)}
+  .opt.bad{background:var(--bad-bg);border-color:var(--bad)}
+  .opt.dim{opacity:.45}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hint{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);border:1.5px dashed var(--line);border-radius:999px;padding:5px 12px}
+  .hint[disabled]{cursor:default;opacity:.6}
+  .hinttxt{background:var(--lav);border-radius:8px;padding:8px 12px;font-size:14px}
+  .fb{border-radius:8px;padding:10px 13px;border-left:5px solid}
+  .fb.good{background:var(--good-bg);border-color:var(--good)}.fb.bad{background:var(--bad-bg);border-color:var(--bad)}
+  .fb strong{display:block}
+  .btn{all:unset;cursor:pointer;background:var(--pink);color:#fff;font-weight:700;border-radius:999px;padding:10px 18px}
+  .btn.alt{background:var(--ink)}
+  .opt:focus-visible,.btn:focus-visible,.hint:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+  .big{font-family:"Matcha Style","Trebuchet MS",Verdana,sans-serif;font-size:60px;font-weight:700;line-height:1}
+  .res{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  [hidden]{display:none!important}
+
+  .mrow{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+  .mascot{width:96px;height:118px;display:flex;align-items:flex-end;justify-content:center}
+  .mascot svg{width:100%;height:100%;animation:hop 1.8s ease-in-out infinite;transform-origin:50% 100%}
+  .mascot.bump svg{animation:bump .6s ease-out,hop 1.8s ease-in-out .6s infinite}
+  .wave{transform-box:fill-box;transform-origin:0% 100%;animation:wv .8s ease-in-out infinite alternate}
+  .speech{position:relative;background:#fff;border:2.5px solid #2b1240;border-radius:16px;padding:10px 14px;font-weight:700;min-height:44px;display:flex;align-items:center}
+  .speech:before{content:"";position:absolute;left:-12px;top:50%;margin-top:-9px;border:9px solid transparent;border-right-color:#2b1240;border-left:0}
+  .speech b.nm{color:#e23e7a;margin-right:6px}
+  .cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;animation:fall linear forwards}
+  @keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-6deg)}60%{transform:scale(.95) rotate(4deg)}100%{transform:scale(1)}}
+  @keyframes wv{from{transform:rotate(-10deg)}to{transform:rotate(14deg)}}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  @media (prefers-reduced-motion:reduce){.mascot svg,.wave,.cf{animation:none!important}}
+  @media (max-width:600px){.mrow{grid-template-columns:72px 1fr}.mascot{width:72px;height:90px}}
+</style></head><body>
+<div class="wrap">
+  <div class="mrow"><div class="mascot" id="mascot"></div><div class="speech" id="speech"><span><b class="nm">Kira:</b><span id="say">¡Hola! Soy Kira. Si te trabas, pide una pista 💡</span></span></div></div>
+  <div><h1>Quiz final</h1><p class="sub">10 preguntas: verdadero/falso y selección múltiple. Puedes pedir una pista, pero esa pregunta vale medio punto.</p></div>
+  <div class="shots" id="shots"></div>
+  <div class="card" id="card"></div>
+</div>
+<template id="pj-idle"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 104 Q54 124 56 146" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="56" cy="150" r="8" fill="#9a6240"/><g class="wave"><path d="M132 104 Q154 90 160 66" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="160" cy="62" r="8" fill="#9a6240"/></g>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M90 76 Q100 85 110 76" stroke="#2b1240" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+</svg></template><template id="pj-good"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 102 Q48 78 52 52" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="52" cy="48" r="8" fill="#9a6240"/><path d="M132 102 Q152 78 148 52" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="148" cy="48" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M88 74 Q100 92 112 74 Z" fill="#2b1240"/><path d="M94 82 Q100 87 106 82 Q100 79 94 82Z" fill="#e23e7a"/>
+</svg></template><template id="pj-mid"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 104 Q54 124 56 146" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="56" cy="150" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="6" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="6" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <path d="M92 80 H108" stroke="#2b1240" stroke-width="3.5" stroke-linecap="round"/><path d="M132 104 Q144 120 116 96" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="114" cy="92" r="8" fill="#9a6240"/>
+</svg></template><template id="pj-bad"><svg class="pj kira" viewBox="0 0 200 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="254" rx="44" ry="6" fill="#2b1240" opacity=".15"/>
+  <path d="M86 186 L84 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/><path d="M114 186 L116 234" stroke="#9a6240" stroke-width="12" stroke-linecap="round"/>
+  <path d="M68 238 Q80 228 94 238 Q94 246 70 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/><path d="M106 238 Q120 228 132 238 Q132 246 108 246Z" fill="#e23e7a" stroke="#2b1240" stroke-width="2"/>
+  <path d="M72 160 H128 L134 196 H104 L100 184 L96 196 H66 Z" fill="#f28c28" stroke="#2b1240" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M68 100 Q50 80 70 46" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="72" cy="42" r="8" fill="#9a6240"/><path d="M132 100 Q150 80 130 46" stroke="#9a6240" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="128" cy="42" r="8" fill="#9a6240"/>
+  <path d="M72 96 Q100 86 128 96 L132 164 H68 Z" fill="#2b1240"/>
+  <path d="M74 128 H126" stroke="#e23e7a" stroke-width="6"/>
+  <circle cx="100" cy="24" r="17" fill="#1b1018"/>
+  <circle cx="100" cy="60" r="34" fill="#9a6240" stroke="#7d4c30" stroke-width="2"/>
+  <path d="M66 58 Q66 26 100 26 Q134 26 134 58 Q126 40 100 40 Q74 40 66 58Z" fill="#1b1018"/>
+  <path d="M67 48 Q100 34 133 48" stroke="#e23e7a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="88" cy="62" rx="4.5" ry="7" fill="#2b1240"/><ellipse cx="112" cy="62" rx="4.5" ry="7" fill="#2b1240"/>
+  <circle cx="89" cy="60" r="1.6" fill="#fff"/><circle cx="113" cy="60" r="1.6" fill="#fff"/>
+  <ellipse cx="80" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/><ellipse cx="120" cy="72" rx="6" ry="3.5" fill="#e23e7a" opacity=".35"/>
+  <ellipse cx="100" cy="80" rx="5" ry="7" fill="#2b1240"/>
+</svg></template><script>
+const GOOD=["¡Eso es! Así se juega limpio.","¡Excelente decisión!","¡Bien hecho! Ese es el espíritu.","¡Lo lograste!"],MID=["Mmm… vas bien, pero se puede mejorar.","Casi, piensa en todas las personas involucradas.","Buena intención, revisa la explicación."],BAD=["¡Uy! Esa no fue la mejor jugada.","Ups… lee la explicación y vuelve a intentarlo.","¡Tranqui! De los errores también se aprende."];
+window.FUN={say(p,t){const m=document.getElementById("mascot");if(!m)return;m.innerHTML=document.getElementById("pj-"+p).innerHTML;m.classList.remove("bump");void m.offsetWidth;m.classList.add("bump");if(t)document.getElementById("say").textContent=t},
+confetti(n){const C=["#e23e7a","#f28c28","#2b1240","#7b4fa0","#3fa7d6"];if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;for(let i=0;i<(n||70);i++){const d=document.createElement("i");d.className="cf";d.style.left=Math.random()*100+"vw";d.style.background=C[i%C.length];d.style.animationDuration=(1.4+Math.random()*1.6)+"s";d.style.animationDelay=Math.random()*.4+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),3600)}},
+pick(a){return a[Math.floor(Math.random()*a.length)]}};
+FUN.say("idle");
+</script>
+<script>
+const Q=[
+ {t:"vf",p:"La excelencia olímpica consiste únicamente en ganar medallas.",a:1,h:"Piensa en el progreso personal.",e:"Falso. La excelencia es dar lo mejor de una misma y mejorar, más allá del resultado."},
+ {t:"m",p:"¿Cuál de estos NO es uno de los tres valores olímpicos del COI?",o:["Respeto","Amistad","Competitividad","Excelencia"],a:2,h:"Los tres valores son excelencia, respeto y…",e:"Los valores olímpicos son excelencia, respeto y amistad."},
+ {t:"vf",p:"Rechazar el dopaje es una forma de vivir el valor del respeto.",a:0,h:"Respeto por las reglas, por el cuerpo y por las rivales.",e:"Verdadero. Implica respeto por las reglas, por la salud y por las demás competidoras."},
+ {t:"m",p:"Una entrenadora mantiene la calma y baja la tensión cuando su equipo pierde por un error arbitral. Está usando…",o:["Liderazgo autoritario","Inteligencia emocional","Planificación táctica","Resolución de problemas"],a:1,h:"Tiene que ver con regular emociones.",e:"Reconocer y regular emociones propias y ajenas es inteligencia emocional."},
+ {t:"m",p:"La regla “la canasta solo vale si todas tocaron el balón” promueve sobre todo…",o:["Trabajo en equipo","Excelencia individual","Velocidad de juego","Disciplina táctica"],a:0,h:"Nadie queda por fuera del juego.",e:"Obliga a cooperar y a incluir a todas: trabajo en equipo."},
+ {t:"vf",p:"Escuchar a las deportistas antes de sancionar es una pérdida de tiempo para una buena líder.",a:1,h:"Recuerda el caso de falta de compromiso.",e:"Falso. Escuchar permite entender las causas y tomar mejores decisiones."},
+ {t:"m",p:"En el campo multidimensional del deporte, organizar una carrera “cero residuos” se relaciona con la dimensión…",o:["Persona","Aula","Cultura","Naturaleza"],a:3,h:"Tiene que ver con el entorno.",e:"Cuidar el entorno al hacer deporte corresponde a la dimensión naturaleza."},
+ {t:"m",p:"Una gestora que presenta datos a la junta en lugar de discutir a gritos aplica…",o:["Comunicación basada en evidencia","Trabajo en equipo","Amistad","Liderazgo autoritario"],a:0,h:"Usa información para convencer.",e:"Comunicar con datos es una forma profesional y respetuosa de influir en decisiones."},
+ {t:"vf",p:"Ayudar a una rival lesionada durante la competencia es un ejemplo del valor de la amistad.",a:0,h:"Piensa en el caso de softball analizado en la cartilla.",e:"Verdadero. La amistad olímpica va más allá de la camiseta del equipo."},
+ {t:"m",p:"Si un equipo gana pero su entrenadora humilla a las jugadoras, la gestora debería…",o:["No intervenir porque gana","Despedirla sin escucharla","Intervenir con diálogo, normas claras y seguimiento","Pedir a las jugadoras que aguanten"],a:2,h:"El respeto está por encima del marcador.",e:"Ganar no justifica el maltrato: se interviene con diálogo, normas y seguimiento."}
+];
+const MEDAL=t=>{const c={oro:["#f2c14e","#b8860b"],plata:["#d5dbe3","#8a96a6"],bronce:["#d9915a","#9a5a2a"]}[t];return `<svg width="74" height="96" viewBox="0 0 74 96" aria-label="Medalla de ${t}" style="flex:none;animation:bump .7s ease-out"><path d="M18 0h14l9 34H27z" fill="#0081c8"/><path d="M56 0H42l-9 34h14z" fill="#ee334e"/><circle cx="37" cy="62" r="28" fill="${c[0]}" stroke="${c[1]}" stroke-width="5"/><circle cx="37" cy="62" r="18" fill="none" stroke="${c[1]}" stroke-width="2" stroke-dasharray="3 3"/><text x="37" y="68" text-anchor="middle" font-family="Arial" font-weight="900" font-size="16" fill="${c[1]}">${t==="oro"?"1":t==="plata"?"2":"3"}</text></svg>`};let i=0, score=0, res=[], usedHint=false;
+const $=id=>document.getElementById(id);
+function shots(){ $("shots").innerHTML=Q.map((_,k)=>`<span class="shot ${k===i?"cur":""} ${res[k]===1?"hit":res[k]===.5?"half":res[k]===0?"miss":""}">${k+1}</span>`).join(""); }
+function show(){
+  shots(); const c=$("card");
+  if(i>=Q.length){
+    const nota=(score/Q.length*10).toFixed(1);const md=nota>=8?"oro":nota>=6?"plata":"bronce";FUN.say(nota>=6?"good":"mid",nota>=8?"¡Oro! Lo hiciste increíble.":nota>=6?"¡Plata! Muy bien.":"Bronce. ¡Repasa y vuelve a intentarlo!");if(nota>=6)FUN.confetti(100);
+    const msg=nota>=8?"¡Excelente dominio del tema!":nota>=6?"Aprobado. Repasa las preguntas falladas.":"Vuelve a entrenar los módulos 2 a 5 e inténtalo otra vez.";
+    try{localStorage.setItem("paula-quiz",nota)}catch(e){}
+    c.innerHTML=`<div class="res">${MEDAL(md)}<span class="big">${nota}</span><div><b style="font-size:18px">${msg}</b><p class="sub">Nota sobre 10 · ${res.filter(r=>r===1).length} aciertos limpios · ${res.filter(r=>r===.5).length} con pista</p></div></div>
+      <button class="btn alt" id="again" style="align-self:flex-start">Repetir el quiz</button>`;
+    $("again").onclick=()=>{i=0;score=0;res=[];show()}; return;
+  }
+  usedHint=false; const q=Q[i]; const opts=q.t==="vf"?["Verdadero","Falso"]:q.o;
+  c.innerHTML=`<span class="type">${q.t==="vf"?"Verdadero o falso":"Selección múltiple"} · Pregunta ${i+1} de ${Q.length}</span>
+    <p class="q">${q.p}</p>
+    <div class="opts ${q.t==="vf"?"tf":""}">${opts.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join("")}</div>
+    <div class="row"><button class="hint" id="hint">💡 Pedir pista (vale ½)</button></div><div id="ht"></div><div id="fb"></div>`;
+  $("hint").onclick=()=>{FUN.say("mid","Aquí va una ayudita…");usedHint=true;$("hint").setAttribute("disabled","");$("ht").innerHTML=`<div class="hinttxt">${q.h}</div>`};
+  c.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const j=+b.dataset.j, ok=j===q.a, val=ok?(usedHint?.5:1):0; score+=val; res[i]=val;
+    c.querySelectorAll(".opt").forEach((x,k)=>{x.setAttribute("disabled","");if(k===q.a)x.classList.add("good");else if(k!==j)x.classList.add("dim")});
+    if(!ok)b.classList.add("bad"); $("hint").setAttribute("disabled",""); shots();FUN.say(ok?"good":"bad",FUN.pick(ok?GOOD:BAD));if(ok)FUN.confetti(30);
+    $("fb").innerHTML=`<div class="fb ${ok?"good":"bad"}"><strong>${ok?(usedHint?"¡Correcto, con pista! +½":"¡Correcto! +1"):"Incorrecto"}</strong>${q.e}</div>
+      <button class="btn" id="next" style="margin-top:10px">${i+1<Q.length?"Siguiente pregunta →":"Ver mi nota"}</button>`;
+    $("next").onclick=()=>{i++;show()};
+  });
+}
+show();
+</script>
+</body></html>
